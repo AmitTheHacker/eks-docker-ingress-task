@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-v2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app-v2
+  template:
+    metadata:
+      labels:
+        app: app-v2
+    spec:
+      containers:
+      - name: app-v2
+        image: amitmishra010/myapp2-v1:1.0.1
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-v2-svc
+spec:
+  selector:
+    app: app-v2
+  ports:
+  - port: 80
+    targetPort: 80

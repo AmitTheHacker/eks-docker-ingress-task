@@ -1,0 +1,41 @@
+# AWS Credentials (NEVER push secrets)
+.aws/
+credentials
+config
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Downloaded IAM policy file
+iam_policy.json
+
+# Helm extracted files
+helm-extract/
+helm.zip
+
+# Docker build cache
+.docker/
+
+# Environment variables
+.env
+.env.local
+
+# # Terraform (if you add later)
+# .terraform/
+# *.tfstate
+# *.tfstate.backup
+# .terraform.lock.hcl
+
+# Kubectl config (NEVER push cluster access)
+kubeconfig
+
+# Temp files from setup script
+k8s/*-temp.yaml
