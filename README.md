@@ -1,57 +1,57 @@
+@'
 # 🚀 Multi-App Deployment on AWS EKS with ALB Ingress
 
 ## 📌 Project Overview
+This project demonstrates a production-grade workflow of deploying multiple Dockerized web applications on Amazon EKS using Docker Hub as the container registry and the AWS ALB Ingress Controller for path-based routing.
 
-This project demonstrates a **production-grade workflow** of deploying
-multiple Dockerized web applications on **Amazon EKS (Elastic Kubernetes
-Service)** using **Docker Hub** as the container registry and **AWS ALB
-(Application Load Balancer) Ingress Controller** for path-based routing.
-
-Two versions of a web app are deployed behind a **single ALB**:
-- `/app1` → Version 1 (Green UI)
-- `/app2` → Version 2 (Red UI)
+Two distinct application versions are deployed behind a single Application Load Balancer:
+- Path `/app1` -> Routes to **App Version 1** (Green Theme)
+- Path `/app2` -> Routes to **App Version 2** (Red Theme)
 
 ---
 
 ## 🏗️ Architecture Diagram
 
-                Internet
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │   AWS ALB (L7 LB)   │
-        │  k8s-xxxxx.elb.aws  │
-        └──────┬───────┬──────┘
-               │       │
-        /app1  │       │  /app2
-               ▼       ▼
-     ┌──────────┐  ┌──────────┐
-     │ Target   │  │ Target   │
-     │ Group 1  │  │ Group 2  │
-     └────┬─────┘  └────┬─────┘
-          │              │
- ┌────────▼───┐  ┌──────▼─────┐
- │  App V1    │  │  App V2    │
- │  Pod1 Pod2 │  │  Pod1 Pod2 │
- │  (nginx)   │  │  (nginx)   │
- └────────────┘  └────────────┘
-     EKS Cluster (2x t3.small)
-
+                    Internet / Users
+                           │
+                           ▼
+            ┌─────────────────────────────┐
+            │   AWS Application LB (ALB)  │
+            │  k8s-mysharedalb-xxxxx.elb  │
+            └──────────────┬──────────────┘
+                           │
+             ┌─────────────┴─────────────┐
+             │ Path-Based Routing Rules  │
+             └─────────────┬─────────────┘
+                    │              │
+           Path: /app1│              │Path: /app2
+                    ▼              ▼
+         ┌──────────────────┐  ┌──────────────────┐
+         │ Target Group 1   │  │ Target Group 2   │
+         └────────┬─────────┘  └────────┬─────────┘
+                  │                     │
+          ┌───────▼────────┐    ┌───────▼────────┐
+          │ App V1 Service │    │ App V2 Service │
+          └───────┬────────┘    └───────┬────────┘
+                  │                     │
+         ┌────────┴────────┐   ┌────────┴────────┐
+         │ App V1 Pods (2) │   │ App V2 Pods (2) │
+         │ (Nginx Alpine)  │   │ (Nginx Alpine)  │
+         └─────────────────┘   └─────────────────┘
+           EKS Managed Cluster (2x t3.small Nodes)
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Tools
 
-| Component | Technology |
+| Layer | Technology |
 |---|---|
-| Container Runtime | Docker |
-| Container Registry | Docker Hub (Public) |
-| Orchestration | Amazon EKS (Kubernetes 1.31) |
-| Ingress Controller | AWS Load Balancer Controller v2.14 |
-| Load Balancer | AWS ALB (Application Load Balancer) |
-| IaC / Cluster Tool | eksctl |
-| Package Manager | Helm v3 |
-| CI/CD (Future) | GitHub Actions (planned) |
+| **Container Engine** | Docker Desktop |
+| **Image Registry** | Docker Hub (Semantic Tagging: `1.0.1`) |
+| **Orchestration** | Amazon EKS (Kubernetes v1.34) |
+| **Ingress Controller** | AWS Load Balancer Controller (v2.14) via Helm |
+| **Cloud Provider** | AWS (ALB, IAM OIDC / IRSA, EC2, VPC) |
+| **IaC & Tooling** | `eksctl v0.230.0`, `kubectl`, `helm v3`, PowerShell |
 
 ---
 
@@ -59,36 +59,21 @@ Two versions of a web app are deployed behind a **single ALB**:
 
 | Tool | Version | Install Command |
 |---|---|---|
-| Docker Desktop | 27.x+ | [Download](https://docker.com) |
+| Docker Desktop | 27.x+ | https://docker.com |
 | AWS CLI | 2.x+ | `winget install Amazon.AWSCLI` |
-| kubectl | 1.31+ | `winget install Kubernetes.kubectl` |
-| eksctl | 0.190+ | `winget install eksctl.eksctl` |
+| kubectl | 1.34+ | `winget install Kubernetes.kubectl` |
+| eksctl | 0.230+ | `winget install eksctl.eksctl` |
 | Helm | 3.x+ | `winget install Helm.Helm` |
-| AWS Account | Free Tier | [Sign Up](https://aws.amazon.com) |
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Automated)
 
 ### 1. Clone the Repository
-```bash
-git clone https://github.com/YOUR_USERNAME/eks-docker-ingress-task.git
+```powershell
+git clone https://github.com/AmitTheHacker/eks-docker-ingress-task.git
 cd eks-docker-ingress-task
 
-### 2. Run Automated Setup
-```PowerShell
 
-.\scripts\setup.ps1
 
-### 3. Access the Apps
-### Wait 2-3 minutes after setup, then:
-
-```bash
-kubectl get ingress
-# Visit: http://<ALB-ADDRESS>/app1
-# Visit: http://<ALB-ADDRESS>/app2
-
-### 4. Cleanup (IMPORTANT — Save Money!)
-```PowerShell
-
-.\scripts\cleanup.ps1
+          
